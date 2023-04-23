@@ -3,10 +3,34 @@ defineComponent({
   name: 'IndexPage',
 })
 
-// const { $client } = useNuxtApp()
-// const hello = await $client.hello.useQuery({ text: 'client' })
+const { $client } = useNuxtApp()
+
+const currentPath = ref('/')
+
+const {
+  data: pathData,
+  error: pathError,
+  refresh: refreshPath,
+} = await $client.fs.get.useQuery({
+  get path() {
+    return currentPath.value
+  },
+})
 </script>
 
 <template>
-  <div></div>
+  <div>
+    <pre v-if="!pathError">{{ JSON.stringify(pathData, null, 4) }}</pre>
+
+    <button
+      v-on:click="
+        () => {
+          currentPath = '/home'
+          refreshPath()
+        }
+      "
+    >
+      test
+    </button>
+  </div>
 </template>
