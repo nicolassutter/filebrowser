@@ -1,6 +1,7 @@
 import path from 'node:path'
 import fs from 'node:fs/promises'
 import { z } from 'zod'
+import { TRPCError } from '@trpc/server'
 import { publicProcedure, router } from '../trpc'
 
 export function isError(e: unknown): e is NodeJS.ErrnoException {
@@ -30,14 +31,26 @@ export const fsRouter = router({
         if (isError(error)) {
           switch (error.code) {
             case 'EACCES':
-              throw new Error('EACCESS: permission denied')
+              throw new TRPCError({
+                code: 'FORBIDDEN',
+                cause: error,
+                message: 'EACCESS: permission denied',
+              })
 
             default:
-              throw new Error('Directory does not exist')
+              throw new TRPCError({
+                code: 'NOT_FOUND',
+                cause: error,
+                message: 'Directory does not exist',
+              })
           }
         }
 
-        throw new Error('Failed to read directory')
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          cause: error,
+          message: 'Failed to read directory',
+        })
       }
     }),
 })
