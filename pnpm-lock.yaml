@@ -11,11 +11,13 @@ specifiers:
   '@trpc/client': ^10.21.1
   '@trpc/server': ^10.21.1
   '@types/node': ^18.15.13
+  '@types/path-browserify': ^1.0.0
   '@vue/eslint-config-prettier': ^7.1.0
   eslint: ^8.39.0
   eslint-config-alsacreations: ^0.4.0
   next-auth: ^4.22.1
   nuxt: ^3.4.2
+  path-browserify: ^1.0.1
   prettier: ^2.8.7
   prisma: ^4.13.0
   superjson: ^1.12.3
@@ -29,6 +31,7 @@ dependencies:
   '@trpc/client': 10.21.1_@trpc+server@10.21.1
   '@trpc/server': 10.21.1
   next-auth: 4.22.1
+  path-browserify: 1.0.1
   superjson: 1.12.3
   trpc-nuxt: 0.9.0_vxoh3tra6m2abjzcmryzuub3ly
   zod: 3.21.4
@@ -41,6 +44,7 @@ devDependencies:
   '@rushstack/eslint-patch': 1.2.0
   '@sidebase/nuxt-auth': 0.5.0_next-auth@4.22.1
   '@types/node': 18.15.13
+  '@types/path-browserify': 1.0.0
   '@vue/eslint-config-prettier': 7.1.0_ijodf5t7srrg7ozp63c3y3ifnq
   eslint: 8.39.0
   eslint-config-alsacreations: 0.4.0_iacogk7kkaymxepzhgcbytyi7q
@@ -1320,6 +1324,10 @@ packages:
 
   /@types/parse-json/4.0.0:
     resolution: {integrity: sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==}
+    dev: true
+
+  /@types/path-browserify/1.0.0:
+    resolution: {integrity: sha512-XMCcyhSvxcch8b7rZAtFAaierBYdeHXVvg2iYnxOV0MCQHmPuRRmGZPFDRzPayxcGiiSL1Te9UIO+f3cuj0tfw==}
     dev: true
 
   /@types/resolve/1.20.2:
@@ -5467,6 +5475,10 @@ packages:
     resolution: {integrity: sha512-CiyeOxFT/JZyN5m0z9PfXw4SCBJ6Sygz1Dpl0wqjlhDEGGBP1GnsUVEL0p63hoG1fcj3fHynXi9NYO4nWOL+qQ==}
     engines: {node: '>= 0.8'}
     dev: true
+
+  /path-browserify/1.0.1:
+    resolution: {integrity: sha512-b7uo2UCUOYZcnF/3ID0lulOJi/bafxa1xPe7ZPsammBSpjSWQkjNxlt635YGS2MiR9GjvuXCtz2emr3jbsz98g==}
+    dev: false
 
   /path-exists/4.0.0:
     resolution: {integrity: sha512-ak9Qy5Q7jYb2Wwcey5Fpvg2KoAc/ZIhLSLOSBmRmygPsGwkVVt0fZa0qrtMz+m6tJTAHfZQ8FnmB4MG4LWy7/w==}
