@@ -14,7 +14,19 @@ export default defineNuxtPlugin(() => {
 
   return {
     provide: {
-      client: computed(() => client),
+      /**
+       * Quick and dirty fix to issue https://github.com/wobsoriano/trpc-nuxt/issues/74
+       */
+      client: new Proxy(client, {
+        get: function (target, prop) {
+          if (prop === 'effect') {
+            return undefined
+          }
+
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          return (target as any)[prop]
+        },
+      }),
     },
   }
 })

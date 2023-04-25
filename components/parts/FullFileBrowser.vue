@@ -16,7 +16,7 @@ const {
   refresh: refreshPath,
   pending: pathPending,
 } = await useAsyncData(props.browserId, () =>
-  $client.value.fs.get.query({
+  $client.fs.get.query({
     get path() {
       return currentPath.value
     },
