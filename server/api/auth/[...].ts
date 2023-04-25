@@ -1,35 +1,25 @@
 import CredentialsProvider from 'next-auth/providers/credentials'
+import { z } from 'zod'
 import { NuxtAuthHandler } from '#auth'
 
 export default NuxtAuthHandler({
   // TODO: SET A STRONG SECRET, SEE https://sidebase.io/nuxt-auth/configuration/nuxt-auth-handler#secret
   secret: process.env.AUTH_SECRET,
+  pages: {
+    signIn: '/login',
+  },
   // TODO: ADD YOUR OWN AUTHENTICATION PROVIDER HERE, READ THE DOCS FOR MORE: https://sidebase.io/nuxt-auth
   providers: [
     // @ts-expect-error You need to use .default here for it to work during SSR. May be fixed via Vite at some point
     CredentialsProvider.default({
-      // The name to display on the sign in form (e.g. 'Sign in with...')
-      name: 'Credentials',
-      // The credentials is used to generate a suitable form on the sign in page.
-      // You can specify whatever fields you are expecting to be submitted.
-      // e.g. domain, username, password, 2FA token, etc.
-      // You can pass any HTML attribute to the <input> tag through the object.
-      credentials: {
-        username: {
-          label: 'Username',
-          type: 'text',
-          placeholder: '(hint: jsmith)',
-        },
-        password: {
-          label: 'Password',
-          type: 'password',
-          placeholder: '(hint: hunter2)',
-        },
-      },
-      authorize(credentials: any) {
-        console.warn(
-          'ATTENTION: You should replace this with your real providers or credential provider logic! The current setup is not safe',
-        )
+      async authorize(credentials: unknown) {
+        const parsedCredentials = z
+          .object({
+            email: z.string(),
+            password: z.string(),
+          })
+          .safeParse(credentials)
+
         // You need to provide your own logic here that takes the credentials
         // submitted and returns either a object representing a user or value
         // that is false/null if the credentials are invalid.
@@ -38,13 +28,21 @@ export default NuxtAuthHandler({
         const user = {
           id: '1',
           name: 'J Smith',
-          username: 'jsmith',
+          email: 'jsmith',
           password: 'hunter2',
         }
 
+        if (!parsedCredentials.success) {
+          return null
+        }
+
+        const { caller } = await import('../../trpc/routers/index')
+
+        caller.auth.checkCredentials(parsedCredentials.data)
+
         if (
-          credentials?.username === user.username &&
-          credentials?.password === user.password
+          parsedCredentials.data.email === user.email &&
+          parsedCredentials.data.password === user.password
         ) {
           // Any object returned will be saved in `user` property of the JWT
           return user
