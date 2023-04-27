@@ -7,7 +7,7 @@
  * @see https://trpc.io/docs/v10/router
  * @see https://trpc.io/docs/v10/procedures
  */
-import { initTRPC } from '@trpc/server'
+import { TRPCError, initTRPC } from '@trpc/server'
 import superjson from 'superjson'
 import type { Context } from '~/server/trpc/context'
 
@@ -21,3 +21,14 @@ const t = initTRPC.context<Context>().create({
 export const publicProcedure = t.procedure
 export const router = t.router
 export const middleware = t.middleware
+
+export const authorizedProcedure = publicProcedure.use(({ next, ctx }) => {
+  if (!ctx.session?.user) {
+    throw new TRPCError({
+      code: 'FORBIDDEN',
+      message: 'Unauthenticated',
+    })
+  }
+
+  return next()
+})

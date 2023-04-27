@@ -2,14 +2,14 @@ import path from 'node:path'
 import fs from 'node:fs/promises'
 import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
-import { publicProcedure, router } from '../trpc'
+import { authorizedProcedure, router } from '../trpc'
 
 export function isError(e: unknown): e is NodeJS.ErrnoException {
   return e instanceof Error
 }
 
 export const fsRouter = router({
-  get: publicProcedure
+  get: authorizedProcedure
     .input(
       z.object({
         path: z.string().default('/'),
