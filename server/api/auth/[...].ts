@@ -15,43 +15,19 @@ export default NuxtAuthHandler({
       async authorize(credentials: unknown) {
         const parsedCredentials = credentialsSchema.safeParse(credentials)
 
-        // You need to provide your own logic here that takes the credentials
-        // submitted and returns either a object representing a user or value
-        // that is false/null if the credentials are invalid.
-        // NOTE: THE BELOW LOGIC IS NOT SAFE OR PROPER FOR AUTHENTICATION!
-
-        const user = {
-          id: '1',
-          name: 'J Smith',
-          email: 'jsmith',
-          password: 'hunter2',
-        }
-
         if (!parsedCredentials.success) {
           return null
         }
 
         const { caller } = await import('../../trpc/routers/index')
 
-        const { userExists } = await caller.auth.checkCredentials(
-          parsedCredentials.data,
-        )
-
-        if (
-          parsedCredentials.data.email === user.email &&
-          parsedCredentials.data.password === user.password
-        ) {
-          // Any object returned will be saved in `user` property of the JWT
-          return user
-        } else {
-          console.error(
-            'Warning: Malicious login attempt registered, bad credentials provided',
+        try {
+          const user = await caller.auth.checkCredentials(
+            parsedCredentials.data,
           )
-
-          // If you return null then an error will be displayed advising the user to check their details.
+          return user
+        } catch (error) {
           return null
-
-          // You can also Reject this callback with an Error thus the user will be sent to the error page with the error message as a query parameter
         }
       },
     }),
