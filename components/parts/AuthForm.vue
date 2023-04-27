@@ -3,7 +3,10 @@ defineProps<{
   authType: 'signIn' | 'register'
 }>()
 
-const { signIn, status } = useAuth()
+const { signIn } = useAuth()
+const route = useRoute()
+
+const authError = computed(() => route.query.error)
 
 const credentials = reactive({
   password: '',
@@ -12,13 +15,14 @@ const credentials = reactive({
 </script>
 
 <template>
+  <p v-if="authError === 'CredentialsSignin'">Bad credentials provided</p>
+
   <form
     v-on:submit.prevent="
       () =>
         signIn('credentials', { ...credentials, authType, callbackUrl: '/' })
     "
   >
-    {{ status }}
     <label for="email">E-mail</label>
 
     <input
