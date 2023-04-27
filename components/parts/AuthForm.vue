@@ -1,10 +1,7 @@
 <script setup lang="ts">
-definePageMeta({
-  auth: {
-    unauthenticatedOnly: true,
-    navigateAuthenticatedTo: '/',
-  },
-})
+defineProps<{
+  authType: 'signIn' | 'register'
+}>()
 
 const { signIn, status } = useAuth()
 
@@ -12,14 +9,13 @@ const credentials = reactive({
   password: '',
   email: '',
 })
-
-const authType = ref<'signIn' | 'register'>('signIn')
 </script>
 
 <template>
   <form
     v-on:submit.prevent="
-      () => signIn('credentials', { ...credentials, authType })
+      () =>
+        signIn('credentials', { ...credentials, authType, callbackUrl: '/' })
     "
   >
     {{ status }}
@@ -41,6 +37,9 @@ const authType = ref<'signIn' | 'register'>('signIn')
       class="border border-solid border-gray-200 rounded-md p-2"
     />
 
-    <button type="submit">Sign-in</button>
+    <button type="submit">
+      <template v-if="authType === 'signIn'">Sign-in</template>
+      <template v-if="authType === 'register'">Register</template>
+    </button>
   </form>
 </template>

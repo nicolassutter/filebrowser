@@ -8,7 +8,17 @@ export default defineNuxtConfig({
   build: {
     transpile: ['trpc-nuxt'],
   },
+  components: [
+    {
+      path: '~/components',
+      pathPrefix: false,
+    },
+  ],
   typescript: {
     shim: false,
+  },
+  auth: {
+    enableGlobalAppMiddleware: true,
+    enableSessionRefreshPeriodically: 60000,
   },
 })
