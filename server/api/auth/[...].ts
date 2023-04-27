@@ -1,6 +1,6 @@
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { z } from 'zod'
 import { NuxtAuthHandler } from '#auth'
+import { credentialsSchema } from '~/types/zod'
 
 export default NuxtAuthHandler({
   // TODO: SET A STRONG SECRET, SEE https://sidebase.io/nuxt-auth/configuration/nuxt-auth-handler#secret
@@ -13,12 +13,7 @@ export default NuxtAuthHandler({
     // @ts-expect-error You need to use .default here for it to work during SSR. May be fixed via Vite at some point
     CredentialsProvider.default({
       async authorize(credentials: unknown) {
-        const parsedCredentials = z
-          .object({
-            email: z.string(),
-            password: z.string(),
-          })
-          .safeParse(credentials)
+        const parsedCredentials = credentialsSchema.safeParse(credentials)
 
         // You need to provide your own logic here that takes the credentials
         // submitted and returns either a object representing a user or value
@@ -38,7 +33,9 @@ export default NuxtAuthHandler({
 
         const { caller } = await import('../../trpc/routers/index')
 
-        caller.auth.checkCredentials(parsedCredentials.data)
+        const { userExists } = await caller.auth.checkCredentials(
+          parsedCredentials.data,
+        )
 
         if (
           parsedCredentials.data.email === user.email &&
