@@ -12,10 +12,16 @@ const credentials = reactive({
   password: '',
   email: '',
 })
+
+const authType = ref<'signIn' | 'register'>('signIn')
 </script>
 
 <template>
-  <form v-on:submit.prevent="() => signIn('credentials', credentials)">
+  <form
+    v-on:submit.prevent="
+      () => signIn('credentials', { ...credentials, authType })
+    "
+  >
     {{ status }}
     <label for="email">E-mail</label>
 
