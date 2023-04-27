@@ -1,5 +1,6 @@
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { z } from 'zod'
+import { merge } from 'lodash-es'
 import { NuxtAuthHandler } from '#auth'
 import { credentialsSchema } from '~/types/zod'
 
@@ -9,7 +10,15 @@ export default NuxtAuthHandler({
   pages: {
     signIn: '/auth/login',
   },
-  // TODO: ADD YOUR OWN AUTHENTICATION PROVIDER HERE, READ THE DOCS FOR MORE: https://sidebase.io/nuxt-auth
+  callbacks: {
+    session({ session, token }) {
+      session.user = token.user
+      return session
+    },
+    jwt({ token, user }) {
+      return merge(token, { user })
+    },
+  },
   providers: [
     // @ts-expect-error You need to use .default here for it to work during SSR. May be fixed via Vite at some point
     CredentialsProvider.default({
