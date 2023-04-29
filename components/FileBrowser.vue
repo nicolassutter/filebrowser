@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// import IconDirectory from '~icons/carbon/folder'
+import IconDirectory from '~icons/carbon/folder'
 
 const props = withDefaults(
   defineProps<{
@@ -79,13 +79,13 @@ watch(dirs, () => {
 <template>
   <div
     ref="container"
-    class="file-browsermax-h-[400px] overflow-y-auto p-1"
+    class="file-browser max-h-screen overflow-y-auto p-1"
   >
     <ul class="">
       <li
         v-for="dir in dirs"
         :key="`dir-${dir.label}`"
-        class="flex-row flex-nowrap items-center relative rounded-md hover:bg-slate-200 after:h-px after:bg-gray-300 after:block after:top-full after:absolute after:left-0 after:right-0"
+        class="flex-row flex-nowrap items-center relative rounded-md dark:hover:bg-slate-700 after:h-px after:bg-gray-600 after:block after:top-full after:absolute after:left-0 after:right-0"
       >
         <input
           v-if="selectable"
@@ -99,7 +99,7 @@ watch(dirs, () => {
         <button
           :disabled="dir.disabled"
           :aria-label="`${dir.label}, navigate`"
-          class="w-full text-left p-2"
+          class="w-full flex items-center text-left p-3 disabled:cursor-not-allowed"
           v-on:click="
             () => {
               uncheckAll()
@@ -107,7 +107,11 @@ watch(dirs, () => {
             }
           "
         >
-          <!-- <IconDirectory /> -->
+          <IconDirectory
+            role="img"
+            aria-label="Directory"
+            class="mr-2"
+          />
           {{ dir.label }}
         </button>
       </li>

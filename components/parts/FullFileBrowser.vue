@@ -25,7 +25,7 @@ const {
 </script>
 
 <template>
-  <div>
+  <div class="full-file-browser">
     <FileBrowser
       v-if="!pathPending && !pathError"
       :dirs="[

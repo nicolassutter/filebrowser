@@ -1,0 +1,12 @@
+.dark {
+  @apply bg-slate-800 text-white;
+}
+
+.app {
+  display: grid;
+  grid-template-columns: minmax(0, theme('spacing.56')) auto;
+}
+
+.app .main {
+  grid-column: 2;
+}

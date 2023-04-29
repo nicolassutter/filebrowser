@@ -11,7 +11,11 @@ const { status, signOut } = useAuth()
 </script>
 
 <template>
-  <div>
+  <main
+    tabindex="-1"
+    role="main"
+    class="main"
+  >
     <div
       class="grid"
       :style="{
@@ -22,6 +26,7 @@ const { status, signOut } = useAuth()
         v-for="col in cols"
         :key="`col-${col.id}`"
         :browserId="`browser-${col.id}`"
+        class="last:border-r-0 border-r border-slate-500 border-solid"
       ></FullFileBrowser>
     </div>
 
@@ -32,5 +37,5 @@ const { status, signOut } = useAuth()
     >
       Sign-out
     </button>
-  </div>
+  </main>
 </template>

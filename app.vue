@@ -1,13 +1,15 @@
 <script lang="ts" setup>
-const { status, data, signIn, signOut, getSession } = useAuth()
+import './assets/app.css'
 
-// if (status.value === 'unauthenticated') {
-//   await signIn()
-// }
+useHead({
+  bodyAttrs: {
+    class: 'dark',
+  },
+})
 </script>
 
 <template>
-  <div>
+  <div class="app">
     <NuxtPage />
   </div>
 </template>
