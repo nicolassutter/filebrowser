@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import IconDirectory from '~icons/carbon/folder'
+import IconDirectory from '~icons/mdi/folder'
+import IconFile from '~icons/mdi/document'
 
 const props = withDefaults(
   defineProps<{
@@ -7,6 +8,7 @@ const props = withDefaults(
      * Used to generate the browser
      */
     dirs: {
+      type: 'directory'
       label: string
       path: string
       disabled?: boolean
@@ -20,6 +22,11 @@ const props = withDefaults(
      * Works with v-model
      */
     selected?: string[]
+    files: {
+      type: 'file'
+      label: string
+      path: string
+    }[]
   }>(),
   {
     selectable: false,
@@ -79,41 +86,73 @@ watch(dirs, () => {
 <template>
   <div
     ref="container"
-    class="file-browser max-h-screen overflow-y-auto p-1"
+    class="file-browser max-h-screen overflow-y-auto"
   >
-    <ul class="">
+    <ul class="menu p-2">
       <li
-        v-for="dir in dirs"
-        :key="`dir-${dir.label}`"
-        class="flex-row flex-nowrap items-center relative rounded-md dark:hover:bg-slate-700 after:h-px after:bg-gray-600 after:block after:top-full after:absolute after:left-0 after:right-0"
+        v-for="dirOrFile in [...dirs, ...files]"
+        :key="`dir-${dirOrFile.label}`"
+        class="flex-row flex-nowrap items-center relative rounded-md"
+        :class="{
+          disabled: 'disabled' in dirOrFile && dirOrFile.disabled,
+        }"
       >
-        <input
+        <span
           v-if="selectable"
-          type="checkbox"
-          :disabled="selectable && dir.path === '..'"
-          class="checkbox checkbox-accent grow-0 shrink-0 p-2 mr-2"
-          :checked="selectedPaths.includes(dir.path)"
-          v-on:change="() => handleCheck(dir.path)"
-        />
+          class="p-0"
+        >
+          <input
+            type="checkbox"
+            :disabled="selectable && dirOrFile.label === '..'"
+            class="checkbox checkbox-info grow-0 shrink-0"
+            :checked="selectedPaths.includes(dirOrFile.path)"
+            v-on:change="() => handleCheck(dirOrFile.path)"
+          />
+        </span>
 
-        <button
-          :disabled="dir.disabled"
-          :aria-label="`${dir.label}, navigate`"
-          class="w-full flex items-center text-left p-3 disabled:cursor-not-allowed"
-          v-on:click="
-            () => {
-              uncheckAll()
-              $emit('navigate', dir.path)
-            }
+        <component
+          :is="dirOrFile.type === 'directory' ? 'button' : 'span'"
+          class="w-full flex items-center text-left p-3"
+          :class="{
+            'active:bg-transparent text-current':
+              dirOrFile.type !== 'directory',
+          }"
+          v-bind="
+            dirOrFile.type === 'directory'
+              ? {
+                  disabled: Boolean(
+                    'disabled' in dirOrFile && dirOrFile.disabled,
+                  ),
+                  title: `${dirOrFile.label}, navigate`,
+                }
+              : {}
+          "
+          v-on="
+            dirOrFile.type === 'directory'
+              ? {
+                  click: () => {
+                    uncheckAll()
+                    $emit('navigate', dirOrFile.path)
+                  },
+                }
+              : {}
           "
         >
           <IconDirectory
+            v-if="dirOrFile.type === 'directory'"
             role="img"
             aria-label="Directory"
-            class="mr-2"
+            class="text-info"
           />
-          {{ dir.label }}
-        </button>
+
+          <IconFile
+            v-if="dirOrFile.type === 'file'"
+            role="img"
+            aria-label="File"
+          />
+
+          {{ dirOrFile.label }}
+        </component>
       </li>
     </ul>
   </div>
