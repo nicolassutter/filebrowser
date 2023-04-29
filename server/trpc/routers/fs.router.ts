@@ -19,12 +19,19 @@ export const fsRouter = router({
       const fullPath = path.resolve(input.path)
 
       try {
-        const dirs = (await fs.readdir(fullPath, { withFileTypes: true }))
+        const readResult = await fs.readdir(fullPath, { withFileTypes: true })
+
+        const directories = readResult
           .filter((dirent) => dirent.isDirectory())
           .map((dirent) => dirent.name)
 
+        const files = readResult
+          .filter((dirent) => dirent.isFile())
+          .map((dirent) => dirent.name)
+
         return {
-          directories: dirs,
+          directories,
+          files,
           fullPath,
         }
       } catch (error) {
