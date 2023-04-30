@@ -5,6 +5,7 @@ export { uuid }
 
 type Events = {
   resetAllChecked: string
+  'refresh-full-filebrowser': string
 }
 
 export const emitter = mitt<Events>()

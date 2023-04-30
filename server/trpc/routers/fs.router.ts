@@ -146,7 +146,7 @@ export const fsRouter = router({
     }),
 
   /**
-   * Items= hard linking
+   * Items hard linking
    */
   link: authorizedProcedure
     .input(

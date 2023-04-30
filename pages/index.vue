@@ -15,7 +15,7 @@ const cols = ref([{ id: 1 }, { id: 2 }])
     class="main"
   >
     <div
-      class="grid"
+      class="grid h-full"
       :style="{
         'grid-template-columns': `repeat(${cols.length}, 1fr)`,
       }"

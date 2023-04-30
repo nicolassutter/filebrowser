@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import IconDirectory from '~icons/mdi/folder'
 import IconFile from '~icons/mdi/document'
+import type { PathOption } from '~/types/utils'
 
 const props = withDefaults(
   defineProps<{
@@ -18,10 +19,10 @@ const props = withDefaults(
      */
     selectable?: boolean
     /**
-     * An array containing the paths of checked directories
+     * An array containing the checked items
      * Works with v-model
      */
-    selected?: string[]
+    selected?: PathOption[]
     files: {
       type: 'file'
       label: string
@@ -44,26 +45,34 @@ defineComponent({
 })
 
 // The checked paths, used internally
-const internalSelectedPaths = ref<string[]>([])
+const internalSelectedPaths = ref<PathOption[]>([])
+
+function isItemChecked(path: string) {
+  return !!selectedPaths.value.find(
+    (selectedPath) => selectedPath.path === path,
+  )
+}
 
 // If a `selected` prop is present, use it, otherwise use `internalSelectedPaths`
 const selectedPaths = computed({
   get() {
     return props.selected ?? internalSelectedPaths.value
   },
-  set(newValue: string[]) {
+  set(newValue: PathOption[]) {
     emit('update:selected', newValue)
     internalSelectedPaths.value = newValue
   },
 })
 
-function handleCheck(path: string) {
-  if (selectedPaths.value.includes(path)) {
+function handleCheck(newItem: PathOption) {
+  if (isItemChecked(newItem.path)) {
     // Remove
-    selectedPaths.value = selectedPaths.value.filter((item) => item !== path)
+    selectedPaths.value = selectedPaths.value.filter(
+      (item) => item.path !== newItem.path,
+    )
   } else {
     // Add
-    selectedPaths.value.push(path)
+    selectedPaths.value.push(newItem)
   }
 }
 
@@ -90,9 +99,9 @@ watch(dirs, () => {
 <template>
   <div
     ref="container"
-    class="file-browser max-h-screen overflow-y-auto"
+    class="file-browser h-full overflow-y-auto flex flex-col items-start justify-start"
   >
-    <ul class="menu p-2">
+    <ul class="menu p-2 flex-nowrap w-full">
       <li
         v-for="dirOrFile in [...dirs, ...files]"
         :key="`dir-${dirOrFile.label}`"
@@ -114,8 +123,8 @@ watch(dirs, () => {
             "
             autocomplete="off"
             class="checkbox checkbox-info grow-0 shrink-0"
-            :checked="selectedPaths.includes(dirOrFile.path)"
-            v-on:change="() => handleCheck(dirOrFile.path)"
+            :checked="isItemChecked(dirOrFile.path)"
+            v-on:change="() => handleCheck(dirOrFile)"
           />
         </span>
 

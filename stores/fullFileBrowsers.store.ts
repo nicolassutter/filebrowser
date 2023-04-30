@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia'
 import path from 'path-browserify'
+import type { PathOption } from '~/types/utils'
 
 export const useFullFileBrowserStore = defineStore('fullFileBrowser', () => {
-  const selectedItemsForAction = ref<string[]>([])
+  const selectedItemsForAction = ref<PathOption[]>([])
   const currentlyPendingAction = ref<'copy' | 'move' | 'hard_link' | 'delete'>()
   const currentlyPendingSrc = ref<string>()
   const currentlyPendingFullFileBrowserId = ref<string>()
@@ -12,7 +13,7 @@ export const useFullFileBrowserStore = defineStore('fullFileBrowser', () => {
   function initImmediateAction(
     action: NonNullable<typeof currentlyPendingAction.value>,
     options: {
-      paths: string[]
+      paths: PathOption[]
     },
   ) {
     currentlyPendingAction.value = action
@@ -22,7 +23,7 @@ export const useFullFileBrowserStore = defineStore('fullFileBrowser', () => {
   function initAction(
     action: NonNullable<typeof currentlyPendingAction.value>,
     options: {
-      paths: string[]
+      paths: PathOption[]
       src: string
       fullFileBrowserId: string
     },
@@ -42,15 +43,15 @@ export const useFullFileBrowserStore = defineStore('fullFileBrowser', () => {
       case 'copy':
         await $client.fs.copyOrMove.mutate({
           paths: selectedItemsForAction.value.map((selectedItem) => {
-            const parsedItem = path.parse(selectedItem)
-            const isFile = parsedItem.ext !== ''
+            const isFile = selectedItem.type === 'file'
+            const parsedItem = path.parse(selectedItem.path)
 
             return {
               dest: path.join(
                 args.dest,
                 isFile ? `${parsedItem.name}${parsedItem.ext}` : '',
               ),
-              src: selectedItem,
+              src: selectedItem.path,
             }
           }),
           action: 'copy',
@@ -60,15 +61,15 @@ export const useFullFileBrowserStore = defineStore('fullFileBrowser', () => {
       case 'move':
         await $client.fs.copyOrMove.mutate({
           paths: selectedItemsForAction.value.map((selectedItem) => {
-            const parsedItem = path.parse(selectedItem)
-            const isFile = parsedItem.ext !== ''
+            const isFile = selectedItem.type === 'file'
+            const parsedItem = path.parse(selectedItem.path)
 
             return {
               dest: path.join(
                 args.dest,
                 isFile ? `${parsedItem.name}${parsedItem.ext}` : '',
               ),
-              src: selectedItem,
+              src: selectedItem.path,
             }
           }),
           action: 'move',
@@ -78,20 +79,16 @@ export const useFullFileBrowserStore = defineStore('fullFileBrowser', () => {
       case 'hard_link':
         await $client.fs.link.mutate({
           paths: selectedItemsForAction.value
-            .filter((selectedItem) => {
-              const parsedItem = path.parse(selectedItem)
-              const isFile = parsedItem.ext !== ''
-              return !!isFile
-            })
+            .filter((selectedItem) => selectedItem.type === 'file')
             .map((selectedItem) => {
-              const parsedItem = path.parse(selectedItem)
+              const parsedItem = path.parse(selectedItem.path)
 
               return {
                 dest: path.join(
                   args.dest,
                   `${parsedItem.name}${parsedItem.ext}`,
                 ),
-                src: selectedItem,
+                src: selectedItem.path,
               }
             }),
         })
@@ -100,12 +97,12 @@ export const useFullFileBrowserStore = defineStore('fullFileBrowser', () => {
       case 'delete':
         await $client.fs.delete.mutate({
           paths: selectedItemsForAction.value.map((selectedItem) => {
-            const parsedItem = path.parse(selectedItem)
-            const isFile = parsedItem.ext !== ''
+            const isFile = selectedItem.type === 'file'
+            const parsedItem = path.parse(selectedItem.path)
 
             return isFile
               ? path.join(args.dest, `${parsedItem.name}${parsedItem.ext}`)
-              : selectedItem
+              : selectedItem.path
           }),
         })
         break

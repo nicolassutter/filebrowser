@@ -26,6 +26,8 @@
     "@types/path-browserify": "^1.0.0",
     "@types/uuid": "^9.0.1",
     "@vue/eslint-config-prettier": "^7.1.0",
+    "@vueuse/core": "^10.1.0",
+    "@vueuse/nuxt": "^10.1.0",
     "daisyui": "^2.51.6",
     "eslint": "^8.39.0",
     "eslint-config-alsacreations": "^0.4.0",

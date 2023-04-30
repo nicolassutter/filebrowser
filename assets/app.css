@@ -1,8 +1,36 @@
+html, body, body > div, .app {
+  height: 100vh;
+}
+
+* {
+  min-height: 0;
+  min-width: 0;
+}
+
 .app {
   display: grid;
-  grid-template-columns: minmax(0, theme('spacing.56')) auto;
+  grid-template-columns: minmax(0, theme('spacing.56')) 1fr;
+  grid-template-rows: theme('spacing.16') 1fr;
+  overflow: hidden;
 }
 
 .app .main {
   grid-column: 2;
+  grid-row: 2;
+
+  @apply flex flex-col;
+}
+
+.app .aside {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.app .header {
+  grid-column: 1 / -1;
+  grid-row: 1;
+}
+
+.explorer-path-btn {
+  text-transform: initial;
 }

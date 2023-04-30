@@ -7,6 +7,7 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@huntersofbook/naive-ui-nuxt',
     '@pinia/nuxt',
+    '@vueuse/nuxt',
     [
       'unplugin-icons/nuxt',
       <UnpluginIconsOptions>{
