@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import type { PrismaClient } from '@prisma/client'
 
 declare module 'h3' {
   interface H3EventContext {
@@ -7,9 +7,5 @@ declare module 'h3' {
 }
 
 export default eventHandler((event) => {
-  if (!prismaServerStore.prisma) {
-    prismaServerStore.prisma = new PrismaClient()
-  }
-
-  event.context.prisma = prismaServerStore.prisma
+  event.context.prisma = prismaServerStore.prisma as PrismaClient
 })

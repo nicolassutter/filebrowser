@@ -7,7 +7,7 @@ import type { PrismaClient } from '@prisma/client'
 export const prismaServerStore = {
   /**
    * The Prisma instance that is instanciated in
-   * the Prisma middleware.
+   * the 1.serverInit.ts plugin.
    */
   prisma: undefined as undefined | PrismaClient,
 }

@@ -15,4 +15,5 @@ export const caller = appRouter.createCaller({
   get prisma() {
     return prismaServerStore.prisma as PrismaClient
   },
+  session: null,
 })
