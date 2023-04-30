@@ -232,7 +232,7 @@ export const fsRouter = router({
     }),
 
   /**
-   * Item deletion
+   * Creates a directory
    */
   createDir: authorizedProcedure
     .input(
