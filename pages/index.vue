@@ -6,8 +6,6 @@ defineComponent({
 })
 
 const cols = ref([{ id: 1 }, { id: 2 }])
-
-const { status, signOut } = useAuth()
 </script>
 
 <template>
@@ -29,13 +27,5 @@ const { status, signOut } = useAuth()
         class="last:border-r-0 border-r border-slate-500 border-solid"
       ></FullFileBrowser>
     </div>
-
-    <button
-      v-if="status === 'authenticated' || status === 'loading'"
-      :disabled="status === 'loading'"
-      v-on:click="() => signOut()"
-    >
-      Sign-out
-    </button>
   </main>
 </template>
