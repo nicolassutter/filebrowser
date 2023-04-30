@@ -1,5 +1,5 @@
 import path from 'node:path'
-import { readdir, rename, link, rm } from 'node:fs/promises'
+import { readdir, rename, link, rm, mkdir } from 'node:fs/promises'
 import { pathExists, copy } from 'fs-extra'
 import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
@@ -212,7 +212,9 @@ export const fsRouter = router({
             throw new Error('Path does not exist')
           }
 
-          await rm(itemPath)
+          await rm(itemPath, {
+            recursive: true,
+          })
         } catch (error) {
           errors.push(
             new TRPCError({
@@ -227,5 +229,44 @@ export const fsRouter = router({
       await Promise.all(promises)
 
       return { errors }
+    }),
+
+  /**
+   * Item deletion
+   */
+  createDir: authorizedProcedure
+    .input(
+      z.object({
+        path: z.string(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      try {
+        await mkdir(input.path, { recursive: true })
+      } catch (error) {
+        if (isError(error)) {
+          switch (error.code) {
+            case 'EACCES':
+              throw new TRPCError({
+                code: 'FORBIDDEN',
+                cause: error,
+                message: 'EACCESS: permission denied',
+              })
+
+            default:
+              throw new TRPCError({
+                code: 'NOT_FOUND',
+                cause: error,
+                message: 'Directory does not exist',
+              })
+          }
+        }
+
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          cause: error,
+          message: 'Failed to read directory',
+        })
+      }
     }),
 })

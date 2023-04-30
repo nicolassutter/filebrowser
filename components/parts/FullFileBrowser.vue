@@ -11,6 +11,7 @@ import IconDelete from '~icons/mdi/delete'
 import IconCheckbox from '~icons/mdi/checkbox-outline'
 import IconCheckboxEmpty from '~icons/mdi/checkbox-blank-outline'
 import IconArrowLeftTop from '~icons/mdi/arrow-u-left-top'
+import IconFolderPlus from '~icons/mdi/folder-plus'
 import { useFullFileBrowserStore } from '~/stores/fullFileBrowsers.store'
 import type { PathOption } from '~/types/utils'
 
@@ -36,6 +37,7 @@ const currentPath = ref('/')
 const selectedItems = ref<PathOption[]>([])
 
 const isOptionsMenuOpen = ref(false)
+const isDirectoryModalOpened = ref(false)
 
 const {
   data: pathData,
@@ -54,6 +56,8 @@ function refresh() {
   selectedItems.value = []
   refreshPath()
 }
+
+const directoryModal = ref<HTMLElement>()
 
 const fullFileBrowserStore = useFullFileBrowserStore()
 const currentlyPendingFullFileBrowserPending = computed(
@@ -143,6 +147,13 @@ const pathParts = computed(() => {
     }
   })
 })
+
+const newDirName = ref('')
+
+const isNewDirNameValid = computed(() => {
+  const validDirRegex = /^[a-zA-Z0-9_-\s]+$/
+  return newDirName.value !== '' && validDirRegex.test(newDirName.value)
+})
 </script>
 
 <template>
@@ -192,12 +203,28 @@ const pathParts = computed(() => {
           <IconCheckbox class="mr-2"></IconCheckbox>
           Check All
         </button>
+
         <button
           class="btn btn-sm"
           v-on:click="() => uncheckAll()"
         >
           <IconCheckboxEmpty class="mr-2"></IconCheckboxEmpty>
           Uncheck All
+        </button>
+      </div>
+
+      <div class="p-2 flex gap-2">
+        <button
+          class="btn btn-sm"
+          v-on:click="
+            () => {
+              isDirectoryModalOpened = true
+              nextTick(() => directoryModal?.focus())
+            }
+          "
+        >
+          <IconFolderPlus class="mr-2"></IconFolderPlus>
+          Create directory
         </button>
       </div>
 
@@ -406,5 +433,88 @@ const pathParts = computed(() => {
         <IconCancel class="h-6 w-6"></IconCancel>
       </button>
     </div>
+
+    <Teleport to="#dialog-root">
+      <div
+        v-if="isDirectoryModalOpened"
+        ref="directoryModal"
+        class="modal modal-bottom sm:modal-middle"
+        :class="{
+          'visible opacity-100 pointer-events-auto': isDirectoryModalOpened,
+        }"
+        aria-modal="true"
+        role="dialog"
+        tabindex="-1"
+        v-on:keyup.escape="
+          () => {
+            newDirName = ''
+            isDirectoryModalOpened = false
+          }
+        "
+      >
+        <form
+          class="modal-box"
+          v-on:submit.prevent="
+            () => {
+              $client.fs.createDir
+                .mutate({
+                  path: path.join(currentPath, newDirName),
+                })
+                .then(() => {
+                  newDirName = ''
+                  isDirectoryModalOpened = false
+                  refresh()
+                })
+            }
+          "
+        >
+          <div class="relative">
+            <button
+              type="button"
+              class="btn btn-circle absolute right-0 top-0"
+              v-on:click="
+                () => {
+                  newDirName = ''
+                  isDirectoryModalOpened = false
+                }
+              "
+            >
+              <IconCancel
+                aria-hidden="true"
+                class=""
+              />
+
+              <span class="sr-only">Close</span>
+            </button>
+
+            <h1 class="font-bold text-lg">Create a new directory</h1>
+
+            <label
+              class="label mt-5"
+              :for="`new-directory-input-${uid}`"
+              >Directory name</label
+            >
+
+            <input
+              :id="`new-directory-input-${uid}`"
+              v-model="newDirName"
+              type="text"
+              class="input input-bordered w-full max-w-xs focus:bg-[hotpink]"
+              required
+            />
+
+            <div class="modal-action">
+              <button
+                :disabled="!isNewDirNameValid"
+                class="btn btn-primary"
+                type="submit"
+              >
+                Create
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </Teleport>
   </div>
 </template>

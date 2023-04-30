@@ -29,6 +29,9 @@ const { status, signOut } = useAuth()
         </li>
       </ul>
     </aside>
+
     <NuxtPage />
+
+    <div id="dialog-root"></div>
   </div>
 </template>
