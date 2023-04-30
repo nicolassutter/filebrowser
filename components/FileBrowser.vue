@@ -38,7 +38,10 @@ const props = withDefaults(
     isNavigationDisabled: false,
   },
 )
+
 const emit = defineEmits(['navigate', 'update:selected'])
+
+const uid = uuid()
 
 defineComponent({
   name: 'FileBrowser',
@@ -72,7 +75,7 @@ function handleCheck(newItem: PathOption) {
     )
   } else {
     // Add
-    selectedPaths.value.push(newItem)
+    selectedPaths.value = [...selectedPaths.value, newItem]
   }
 }
 
@@ -94,6 +97,8 @@ watch(dirs, () => {
     container.value.scrollTo({ top: 0 })
   }
 })
+
+const items = computed(() => [...props.dirs, ...props.files])
 </script>
 
 <template>
@@ -103,7 +108,7 @@ watch(dirs, () => {
   >
     <ul class="menu p-2 flex-nowrap w-full">
       <li
-        v-for="dirOrFile in [...dirs, ...files]"
+        v-for="dirOrFile in items"
         :key="`dir-${dirOrFile.label}`"
         class="flex-row flex-nowrap items-center relative rounded-md"
         :class="{
@@ -116,7 +121,15 @@ watch(dirs, () => {
           v-if="selectable"
           class="p-0"
         >
+          <label
+            class="sr-only"
+            :for="`checkbox-${uid}-${dirOrFile.path}`"
+          >
+            Select {{ dirOrFile.path }}
+          </label>
+
           <input
+            :id="`checkbox-${uid}-${dirOrFile.path}`"
             type="checkbox"
             :disabled="
               (selectable && dirOrFile.label === '..') || isSelectionDisabled

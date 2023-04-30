@@ -13,7 +13,7 @@ import IconCheckboxEmpty from '~icons/mdi/checkbox-blank-outline'
 import IconArrowLeftTop from '~icons/mdi/arrow-u-left-top'
 import IconFolderPlus from '~icons/mdi/folder-plus'
 import { useFullFileBrowserStore } from '~/stores/fullFileBrowsers.store'
-import type { PathOption } from '~/types/utils'
+import type { ComponentProps, PathOption } from '~/types/utils'
 
 const props = defineProps<{
   browserId: string
@@ -154,6 +154,37 @@ const isNewDirNameValid = computed(() => {
   const validDirRegex = /^[a-zA-Z0-9_-\s]+$/
   return newDirName.value !== '' && validDirRegex.test(newDirName.value)
 })
+
+const dirs = computed<ComponentProps<'FileBrowser'>['dirs']>(() => {
+  return [
+    {
+      type: 'directory',
+      label: '..',
+      path: path.join(currentPath.value, '..'),
+      disabled: currentPath.value === '/',
+    },
+    ...(pathData.value?.directories.map((dir) => {
+      return {
+        type: 'directory',
+        label: dir,
+        path: path.join(currentPath.value, dir),
+        disabled: false,
+      } satisfies ComponentProps<'FileBrowser'>['dirs'][number]
+    }) ?? []),
+  ]
+})
+
+const files = computed(() => {
+  return (
+    pathData.value?.files.map((file) => {
+      return {
+        type: 'file',
+        label: file,
+        path: path.join(currentPath.value, file),
+      } satisfies ComponentProps<'FileBrowser'>['files'][number]
+    }) ?? []
+  )
+})
 </script>
 
 <template>
@@ -233,31 +264,8 @@ const isNewDirNameValid = computed(() => {
         selectable
         :isSelectionDisabled="currentlyPendingFullFileBrowserPending"
         :isNavigationDisabled="currentlyPendingFullFileBrowserPending"
-        :dirs="[
-          {
-            type: 'directory',
-            label: '..',
-            path: path.join(currentPath, '..'),
-            disabled: currentPath === '/',
-          },
-          ...(pathData?.directories.map((dir) => {
-            return {
-              type: 'directory',
-              label: dir,
-              path: path.join(currentPath, dir),
-              disabled: false,
-            } as const
-          }) ?? []),
-        ]"
-        :files="
-          pathData?.files.map((file) => {
-            return {
-              type: 'file',
-              label: file,
-              path: path.join(currentPath, file),
-            }
-          }) ?? []
-        "
+        :dirs="dirs"
+        :files="files"
         v-on:navigate="handleNavigate"
       >
       </FileBrowser>
@@ -434,87 +442,89 @@ const isNewDirNameValid = computed(() => {
       </button>
     </div>
 
-    <Teleport to="#dialog-root">
-      <div
-        v-if="isDirectoryModalOpened"
-        ref="directoryModal"
-        class="modal modal-bottom sm:modal-middle"
-        :class="{
-          'visible opacity-100 pointer-events-auto': isDirectoryModalOpened,
-        }"
-        aria-modal="true"
-        role="dialog"
-        tabindex="-1"
-        v-on:keyup.escape="
-          () => {
-            newDirName = ''
-            isDirectoryModalOpened = false
-          }
-        "
-      >
-        <form
-          class="modal-box"
-          v-on:submit.prevent="
+    <ClientOnly>
+      <Teleport to="#dialog-root">
+        <div
+          v-if="isDirectoryModalOpened"
+          ref="directoryModal"
+          class="modal modal-bottom sm:modal-middle"
+          :class="{
+            'visible opacity-100 pointer-events-auto': isDirectoryModalOpened,
+          }"
+          aria-modal="true"
+          role="dialog"
+          tabindex="-1"
+          v-on:keyup.escape="
             () => {
-              $client.fs.createDir
-                .mutate({
-                  path: path.join(currentPath, newDirName),
-                })
-                .then(() => {
-                  newDirName = ''
-                  isDirectoryModalOpened = false
-                  refresh()
-                })
+              newDirName = ''
+              isDirectoryModalOpened = false
             }
           "
         >
-          <div class="relative">
-            <button
-              type="button"
-              class="btn btn-circle absolute right-0 top-0"
-              v-on:click="
-                () => {
-                  newDirName = ''
-                  isDirectoryModalOpened = false
-                }
-              "
-            >
-              <IconCancel
-                aria-hidden="true"
-                class=""
+          <form
+            class="modal-box"
+            v-on:submit.prevent="
+              () => {
+                $client.fs.createDir
+                  .mutate({
+                    path: path.join(currentPath, newDirName),
+                  })
+                  .then(() => {
+                    newDirName = ''
+                    isDirectoryModalOpened = false
+                    refresh()
+                  })
+              }
+            "
+          >
+            <div class="relative">
+              <button
+                type="button"
+                class="btn btn-circle absolute right-0 top-0"
+                v-on:click="
+                  () => {
+                    newDirName = ''
+                    isDirectoryModalOpened = false
+                  }
+                "
+              >
+                <IconCancel
+                  aria-hidden="true"
+                  class=""
+                />
+
+                <span class="sr-only">Close</span>
+              </button>
+
+              <h1 class="font-bold text-lg">Create a new directory</h1>
+
+              <label
+                class="label mt-5"
+                :for="`new-directory-input-${uid}`"
+                >Directory name</label
+              >
+
+              <input
+                :id="`new-directory-input-${uid}`"
+                v-model="newDirName"
+                type="text"
+                class="input input-bordered w-full max-w-xs focus:bg-[hotpink]"
+                required
               />
 
-              <span class="sr-only">Close</span>
-            </button>
-
-            <h1 class="font-bold text-lg">Create a new directory</h1>
-
-            <label
-              class="label mt-5"
-              :for="`new-directory-input-${uid}`"
-              >Directory name</label
-            >
-
-            <input
-              :id="`new-directory-input-${uid}`"
-              v-model="newDirName"
-              type="text"
-              class="input input-bordered w-full max-w-xs focus:bg-[hotpink]"
-              required
-            />
-
-            <div class="modal-action">
-              <button
-                :disabled="!isNewDirNameValid"
-                class="btn btn-primary"
-                type="submit"
-              >
-                Create
-              </button>
+              <div class="modal-action">
+                <button
+                  :disabled="!isNewDirNameValid"
+                  class="btn btn-primary"
+                  type="submit"
+                >
+                  Create
+                </button>
+              </div>
             </div>
-          </div>
-        </form>
-      </div>
-    </Teleport>
+          </form>
+        </div>
+      </Teleport>
+    </ClientOnly>
   </div>
 </template>
