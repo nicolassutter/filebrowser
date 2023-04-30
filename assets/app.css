@@ -14,7 +14,7 @@ html, body, body > div, .app {
   overflow: hidden;
 }
 
-.app .main {
+:where(.app .main) {
   grid-column: 2;
   grid-row: 2;
 

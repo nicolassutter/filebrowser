@@ -18,32 +18,45 @@ const credentials = reactive({
   <p v-if="authError === 'CredentialsSignin'">Bad credentials provided</p>
 
   <form
+    class="bg-base-200 rounded-lg p-5 w-full max-w-sm"
     v-on:submit.prevent="
       () =>
         signIn('credentials', { ...credentials, authType, callbackUrl: '/' })
     "
   >
-    <label for="email">E-mail</label>
+    <label
+      class="label"
+      for="email"
+      >E-mail</label
+    >
 
     <input
       id="email"
       v-model="credentials.email"
       type="email"
-      class="border border-solid border-gray-200 rounded-md p-2"
+      class="input input-bordered w-full"
+      autocomplete="email"
     />
 
-    <label for="password">Password</label>
+    <label
+      class="label"
+      for="password"
+      >Password</label
+    >
 
     <input
       id="password"
       v-model="credentials.password"
       type="password"
-      class="border border-solid border-gray-200 rounded-md p-2"
+      class="input input-bordered w-full"
     />
 
-    <button type="submit">
-      <template v-if="authType === 'signIn'">Sign-in</template>
-      <template v-if="authType === 'register'">Register</template>
+    <button
+      class="btn btn-primary flex mt-5"
+      type="submit"
+    >
+      <template v-if="authType === 'signIn'">Sign in ✨</template>
+      <template v-if="authType === 'register'">Register ✨</template>
     </button>
   </form>
 </template>

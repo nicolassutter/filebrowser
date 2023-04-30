@@ -4,9 +4,16 @@ definePageMeta({
     unauthenticatedOnly: true,
     navigateAuthenticatedTo: '/',
   },
+  layout: 'auth',
 })
 </script>
 
 <template>
-  <AuthForm :authType="'signIn'"></AuthForm>
+  <main
+    role="main"
+    class="main row-span-full col-span-full flex items-center justify-center"
+    tabindex="-1"
+  >
+    <AuthForm :authType="'signIn'"></AuthForm>
+  </main>
 </template>
