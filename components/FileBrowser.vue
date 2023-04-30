@@ -27,10 +27,14 @@ const props = withDefaults(
       label: string
       path: string
     }[]
+    isSelectionDisabled?: boolean
+    isNavigationDisabled?: boolean
   }>(),
   {
     selectable: false,
     selected: undefined,
+    isSelectionDisabled: false,
+    isNavigationDisabled: false,
   },
 )
 const emit = defineEmits(['navigate', 'update:selected'])
@@ -94,7 +98,9 @@ watch(dirs, () => {
         :key="`dir-${dirOrFile.label}`"
         class="flex-row flex-nowrap items-center relative rounded-md"
         :class="{
-          disabled: 'disabled' in dirOrFile && dirOrFile.disabled,
+          disabled:
+            ('disabled' in dirOrFile && dirOrFile.disabled) ||
+            isSelectionDisabled,
         }"
       >
         <span
@@ -103,7 +109,10 @@ watch(dirs, () => {
         >
           <input
             type="checkbox"
-            :disabled="selectable && dirOrFile.label === '..'"
+            :disabled="
+              (selectable && dirOrFile.label === '..') || isSelectionDisabled
+            "
+            autocomplete="off"
             class="checkbox checkbox-info grow-0 shrink-0"
             :checked="selectedPaths.includes(dirOrFile.path)"
             v-on:change="() => handleCheck(dirOrFile.path)"
@@ -121,7 +130,8 @@ watch(dirs, () => {
             dirOrFile.type === 'directory'
               ? {
                   disabled: Boolean(
-                    'disabled' in dirOrFile && dirOrFile.disabled,
+                    ('disabled' in dirOrFile && dirOrFile.disabled) ||
+                      isNavigationDisabled,
                   ),
                   title: `${dirOrFile.label}, navigate`,
                 }

@@ -6,6 +6,8 @@ import IconCopy from '~icons/mdi/content-copy'
 import IconPaste from '~icons/mdi/content-paste'
 import IconMove from '~icons/mdi/folder-move'
 import IconHardLink from '~icons/mdi/vector-link'
+import IconCancel from '~icons/mdi/close'
+import IconDelete from '~icons/mdi/delete'
 import { useFullFileBrowserStore } from '~/stores/fullFileBrowsers.store'
 
 const props = defineProps<{
@@ -41,6 +43,15 @@ function refresh() {
 }
 
 const fullFileBrowserStore = useFullFileBrowserStore()
+const currentlyPendingFullFileBrowserPending = computed(
+  () => fullFileBrowserStore.currentlyPendingFullFileBrowserId === uid,
+)
+
+emitter.on('resetAllChecked', (fullFileBrowserId) => {
+  if (fullFileBrowserId !== uid) {
+    selectedItems.value = []
+  }
+})
 </script>
 
 <template>
@@ -54,6 +65,8 @@ const fullFileBrowserStore = useFullFileBrowserStore()
       <FileBrowser
         v-model:selected="selectedItems"
         selectable
+        :isSelectionDisabled="currentlyPendingFullFileBrowserPending"
+        :isNavigationDisabled="currentlyPendingFullFileBrowserPending"
         :dirs="[
           {
             type: 'directory',
@@ -75,7 +88,7 @@ const fullFileBrowserStore = useFullFileBrowserStore()
             return {
               type: 'file',
               label: file,
-              path: file,
+              path: path.join(currentPath, file),
             }
           }) ?? []
         "
@@ -130,6 +143,8 @@ const fullFileBrowserStore = useFullFileBrowserStore()
                   src: currentPath,
                   fullFileBrowserId: uid,
                 })
+
+                isOptionsMenuOpen = false
               }
             "
           >
@@ -138,15 +153,64 @@ const fullFileBrowserStore = useFullFileBrowserStore()
           </button>
         </li>
         <li>
-          <button>
+          <button
+            v-on:click="
+              () => {
+                fullFileBrowserStore.initAction('move', {
+                  paths: selectedItems,
+                  src: currentPath,
+                  fullFileBrowserId: uid,
+                })
+
+                isOptionsMenuOpen = false
+              }
+            "
+          >
             <IconMove></IconMove>
             Move
           </button>
         </li>
         <li>
-          <button>
+          <button
+            v-on:click="
+              () => {
+                fullFileBrowserStore.initAction('hard_link', {
+                  paths: selectedItems,
+                  src: currentPath,
+                  fullFileBrowserId: uid,
+                })
+
+                isOptionsMenuOpen = false
+              }
+            "
+          >
             <IconHardLink></IconHardLink>
             Hard Link
+          </button>
+        </li>
+        <li>
+          <button
+            v-on:click="
+              () => {
+                fullFileBrowserStore.initImmediateAction('delete', {
+                  paths: selectedItems,
+                })
+
+                isOptionsMenuOpen = false
+
+                fullFileBrowserStore
+                  .startPendingAction({
+                    dest: currentPath,
+                    fullFileBrowserId: uid,
+                  })
+                  .finally(() => {
+                    refresh()
+                  })
+              }
+            "
+          >
+            <IconDelete></IconDelete>
+            Delete
           </button>
         </li>
       </ul>
@@ -155,13 +219,24 @@ const fullFileBrowserStore = useFullFileBrowserStore()
     <div
       v-if="
         fullFileBrowserStore.selectedItemsForAction.length > 0 &&
-        fullFileBrowserStore.currentlyPendingFullFileBrowserId !== uid
+        fullFileBrowserStore.currentlyPendingFullFileBrowserId !== uid &&
+        fullFileBrowserStore.currentlyPendingAction !== 'delete'
       "
       class="absolute right-4 bottom-4"
     >
       <button
         class="btn btn-circle"
-        v-on:click="() => fullFileBrowserStore.startPendingAction()"
+        v-on:click="
+          () =>
+            fullFileBrowserStore
+              .startPendingAction({
+                dest: currentPath,
+                fullFileBrowserId: uid,
+              })
+              .finally(() => {
+                refresh()
+              })
+        "
       >
         <IconPaste
           v-if="
@@ -175,6 +250,19 @@ const fullFileBrowserStore = useFullFileBrowserStore()
           v-if="fullFileBrowserStore.currentlyPendingAction === 'hard_link'"
           class="h-6 w-6"
         ></IconHardLink>
+      </button>
+    </div>
+
+    <!-- Cancel zone -->
+    <div
+      v-if="currentlyPendingFullFileBrowserPending"
+      class="absolute right-4 bottom-4"
+    >
+      <button
+        class="btn btn-circle"
+        v-on:click="() => fullFileBrowserStore.resetPendingAction()"
+      >
+        <IconCancel class="h-6 w-6"></IconCancel>
       </button>
     </div>
   </div>
