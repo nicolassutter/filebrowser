@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { OnClickOutside } from '@vueuse/components'
 import IconDirectory from '~icons/mdi/folder'
 import IconFile from '~icons/mdi/document'
+import IconDotsVertical from '~icons/mdi/dots-vertical'
+import IconRename from '~icons/mdi/rename'
 import type { PathOption } from '~/types/utils'
 
 const props = withDefaults(
@@ -39,7 +42,7 @@ const props = withDefaults(
   },
 )
 
-const emit = defineEmits(['navigate', 'update:selected'])
+const emit = defineEmits(['navigate', 'update:selected', 'rename'])
 
 const uid = uuid()
 
@@ -99,6 +102,17 @@ watch(dirs, () => {
 })
 
 const items = computed(() => [...props.dirs, ...props.files])
+
+const openedMenus = ref<Record<string, boolean>>({})
+
+function toggleMenu(path: string, value?: boolean) {
+  if (value !== undefined) {
+    openedMenus.value[path] = value
+    return
+  }
+
+  openedMenus.value[path] = !openedMenus.value[path]
+}
 </script>
 
 <template>
@@ -119,7 +133,7 @@ const items = computed(() => [...props.dirs, ...props.files])
       >
         <span
           v-if="selectable"
-          class="p-0"
+          class="p-0 mr-2"
         >
           <label
             class="sr-only"
@@ -185,6 +199,42 @@ const items = computed(() => [...props.dirs, ...props.files])
 
           {{ dirOrFile.label }}
         </component>
+
+        <!-- Only if item is not disabled -->
+        <OnClickOutside
+          v-if="!('disabled' in dirOrFile && dirOrFile.disabled)"
+          class="bg-transparent p-0 ml-2 relative"
+          v-on:trigger="() => toggleMenu(dirOrFile.path, false)"
+        >
+          <button
+            :aria-controls="`filebrowser-item-${dirOrFile.path}-options-menu-${uid}`"
+            class="btn btn-circle btn-sm"
+            :title="`Open options for item '${dirOrFile.path}'`"
+            v-on:click="() => toggleMenu(dirOrFile.path)"
+          >
+            <IconDotsVertical aria-hidden="true"></IconDotsVertical>
+          </button>
+
+          <ul
+            v-if="openedMenus[dirOrFile.path] === true"
+            :id="`filebrowser-item-${dirOrFile.path}-options-menu-${uid}`"
+            class="menu menu-compact bg-base-200 w-56 p-2 rounded-box absolute bottom-full -translate-y-2 right-0 shadow-lg"
+            role="menu"
+          >
+            <li>
+              <button
+                v-on:click="
+                  () => {
+                    $emit('rename', dirOrFile)
+                  }
+                "
+              >
+                <IconRename></IconRename>
+                Rename
+              </button>
+            </li>
+          </ul>
+        </OnClickOutside>
       </li>
     </ul>
   </div>

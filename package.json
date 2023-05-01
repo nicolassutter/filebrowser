@@ -35,6 +35,7 @@
     "nuxt": "^3.4.2",
     "prettier": "^2.8.7",
     "prisma": "^4.13.0",
+    "type-fest": "^3.9.0",
     "typescript": "^5.0.4",
     "unplugin-icons": "^0.16.1",
     "vue-tsc": "^1.4.2"
@@ -45,6 +46,7 @@
     "@trpc/client": "^10.21.1",
     "@trpc/server": "^10.21.1",
     "@types/bcrypt": "^5.0.0",
+    "@vueuse/components": "^10.1.0",
     "bcrypt": "^5.1.0",
     "fs-extra": "^11.1.1",
     "lodash-es": "^4.17.21",

@@ -185,6 +185,8 @@ const files = computed(() => {
     }) ?? []
   )
 })
+
+const renamingModalState = useRenamingModal()
 </script>
 
 <template>
@@ -267,6 +269,7 @@ const files = computed(() => {
         :dirs="dirs"
         :files="files"
         v-on:navigate="handleNavigate"
+        v-on:rename="renamingModalState.handleRename"
       >
       </FileBrowser>
     </template>
@@ -444,6 +447,19 @@ const files = computed(() => {
 
     <ClientOnly>
       <Teleport to="#dialog-root">
+        <RenamingModal
+          v-if="renamingModalState.isRenamingModalOpened"
+          v-model:renamingItemSrc="renamingModalState.renamingItemSrc"
+          v-model:renamingItemNewName="renamingModalState.renamingItemNewName"
+          :currentPath="currentPath"
+          v-on:renamed="() => refresh()"
+          v-on:close="() => (renamingModalState.isRenamingModalOpened = false)"
+        ></RenamingModal>
+      </Teleport>
+    </ClientOnly>
+
+    <ClientOnly>
+      <Teleport to="#dialog-root">
         <div
           v-if="isDirectoryModalOpened"
           ref="directoryModal"
@@ -508,7 +524,7 @@ const files = computed(() => {
                 :id="`new-directory-input-${uid}`"
                 v-model="newDirName"
                 type="text"
-                class="input input-bordered w-full max-w-xs focus:bg-[hotpink]"
+                class="input input-bordered w-full max-w-xs"
                 required
               />
 
