@@ -9,6 +9,39 @@ export function isError(e: unknown): e is NodeJS.ErrnoException {
   return e instanceof Error
 }
 
+/**
+ * Takes in any error like object after an fs related error,
+ * and formats it with `TRPCError`.
+ *
+ * The function always throws, so it needs to be wrapped by a try / catch
+ * unless it is meant to always throw.
+ */
+function handleFsError(error: unknown) {
+  if (isError(error)) {
+    switch (error.code) {
+      case 'EACCES':
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          cause: error,
+          message: 'EACCESS: permission denied',
+        })
+
+      default:
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          cause: error,
+          message: 'Directory does not exist',
+        })
+    }
+  }
+
+  throw new TRPCError({
+    code: 'INTERNAL_SERVER_ERROR',
+    cause: error,
+    message: 'Failed to read directory',
+  })
+}
+
 export const fsRouter = router({
   /**
    * Getting files and directories at the specified path
@@ -39,29 +72,7 @@ export const fsRouter = router({
           fullPath,
         }
       } catch (error) {
-        if (isError(error)) {
-          switch (error.code) {
-            case 'EACCES':
-              throw new TRPCError({
-                code: 'FORBIDDEN',
-                cause: error,
-                message: 'EACCESS: permission denied',
-              })
-
-            default:
-              throw new TRPCError({
-                code: 'NOT_FOUND',
-                cause: error,
-                message: 'Directory does not exist',
-              })
-          }
-        }
-
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          cause: error,
-          message: 'Failed to read directory',
-        })
+        handleFsError(error)
       }
     }),
 
@@ -104,37 +115,7 @@ export const fsRouter = router({
             await rename(src, dest)
           }
         } catch (error) {
-          if (isError(error)) {
-            switch (error.code) {
-              case 'EACCES':
-                errors.push(
-                  new TRPCError({
-                    code: 'FORBIDDEN',
-                    cause: error,
-                    message: 'EACCESS: permission denied',
-                  }),
-                )
-                return
-
-              default:
-                errors.push(
-                  new TRPCError({
-                    code: 'NOT_FOUND',
-                    cause: error,
-                    message: 'Directory does not exist',
-                  }),
-                )
-                return
-            }
-          }
-
-          errors.push(
-            new TRPCError({
-              code: 'INTERNAL_SERVER_ERROR',
-              cause: error,
-              message: 'Failed to read directory',
-            }),
-          )
+          handleFsError(error)
         }
       })
 
@@ -177,13 +158,12 @@ export const fsRouter = router({
 
           await link(src, dest)
         } catch (error) {
-          errors.push(
-            new TRPCError({
-              code: 'INTERNAL_SERVER_ERROR',
-              cause: error,
-              message: 'Failed to read directory',
-            }),
-          )
+          try {
+            handleFsError(error)
+          } catch (error) {
+            // `handleFsError` always throws a formatted error
+            errors.push(error as TRPCError)
+          }
         }
       })
 
@@ -216,13 +196,12 @@ export const fsRouter = router({
             recursive: true,
           })
         } catch (error) {
-          errors.push(
-            new TRPCError({
-              code: 'INTERNAL_SERVER_ERROR',
-              cause: error,
-              message: 'Failed to read directory',
-            }),
-          )
+          try {
+            handleFsError(error)
+          } catch (error) {
+            // `handleFsError` always throws a formatted error
+            errors.push(error as TRPCError)
+          }
         }
       })
 
@@ -244,29 +223,7 @@ export const fsRouter = router({
       try {
         await mkdir(input.path, { recursive: true })
       } catch (error) {
-        if (isError(error)) {
-          switch (error.code) {
-            case 'EACCES':
-              throw new TRPCError({
-                code: 'FORBIDDEN',
-                cause: error,
-                message: 'EACCESS: permission denied',
-              })
-
-            default:
-              throw new TRPCError({
-                code: 'NOT_FOUND',
-                cause: error,
-                message: 'Directory does not exist',
-              })
-          }
-        }
-
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          cause: error,
-          message: 'Failed to read directory',
-        })
+        handleFsError(error)
       }
     }),
 })
