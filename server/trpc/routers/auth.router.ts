@@ -47,6 +47,17 @@ export const authRouter = router({
   register: publicProcedure
     .input(credentialsSchema)
     .mutation(async ({ ctx, input }) => {
+      const areRegistrationsAllowed =
+        process.env.ALLOW_REGISTRATIONS === undefined &&
+        process.env.ALLOW_REGISTRATIONS === 'true'
+
+      if (!areRegistrationsAllowed) {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'Registrations are not allowed.',
+        })
+      }
+
       const hashedPassword = await bcrypt.hash(input.password, 10)
 
       const user = await ctx.prisma.user.create({
