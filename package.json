@@ -9,8 +9,8 @@
     "postinstall": "nuxt prepare",
     "lint": "eslint --max-warnings 0 .",
     "typecheck": "nuxt typecheck",
-    "start": "NODE_ENV=production node .output/server/index.mjs",
-    "docker:start": "nlx prisma generate && nlx prisma db push && nr preview",
+    "start": "NODE_ENV=production tsx .output/server/index.mjs",
+    "docker:start": "nlx prisma generate && nlx prisma db push && nr start",
     "studio": "nlx prisma studio",
     "release": "bumpp"
   },
@@ -38,6 +38,7 @@
     "nuxt": "^3.4.2",
     "prettier": "^2.8.7",
     "prisma": "^4.13.0",
+    "tsx": "^3.12.7",
     "type-fest": "^3.9.0",
     "typescript": "^5.0.4",
     "unplugin-icons": "^0.16.1",
