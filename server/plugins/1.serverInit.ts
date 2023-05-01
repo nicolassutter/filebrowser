@@ -18,6 +18,11 @@ export default defineNitroPlugin(async () => {
   const USER_EMAIL = process.env.USER_EMAIL
   const USER_PASSWORD = process.env.USER_PASSWORD
 
+  // No need to continue in dev
+  if (process.env.NODE_ENV !== 'production') {
+    return
+  }
+
   if (!USER_EMAIL || !USER_PASSWORD) {
     throw new Error(
       'Please provide a USER_EMAIL and USER_PASSWORD environment variable.',

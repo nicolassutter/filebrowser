@@ -3,7 +3,7 @@
   "version": "0.1.0-beta.1",
   "scripts": {
     "build": "nuxt build",
-    "dev": "nuxt dev",
+    "dev": "AUTH_SECRET=secret nuxt dev",
     "generate": "nuxt generate",
     "preview": "NODE_ENV=production nuxt preview",
     "postinstall": "nuxt prepare",
@@ -55,7 +55,7 @@
     "fs-extra": "^11.1.1",
     "lodash-es": "^4.17.21",
     "mitt": "^3.0.0",
-    "next-auth": "^4.22.1",
+    "next-auth": "^4.21.1",
     "path-browserify": "^1.0.1",
     "pinia": "^2.0.35",
     "superjson": "^1.12.3",
