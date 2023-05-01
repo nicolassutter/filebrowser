@@ -24,6 +24,7 @@ specifiers:
   '@vueuse/core': ^10.1.0
   '@vueuse/nuxt': ^10.1.0
   bcrypt: ^5.1.0
+  bumpp: ^9.1.0
   daisyui: ^2.51.6
   eslint: ^8.39.0
   eslint-config-alsacreations: ^0.4.0
@@ -81,6 +82,7 @@ devDependencies:
   '@vue/eslint-config-prettier': 7.1.0_ijodf5t7srrg7ozp63c3y3ifnq
   '@vueuse/core': 10.1.0
   '@vueuse/nuxt': 10.1.0_nuxt@3.4.2
+  bumpp: 9.1.0
   daisyui: 2.51.6
   eslint: 8.39.0
   eslint-config-alsacreations: 0.4.0_iacogk7kkaymxepzhgcbytyi7q
@@ -795,6 +797,16 @@ packages:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.0
       '@jridgewell/sourcemap-codec': 1.4.14
+
+  /@jsdevtools/ez-spawn/3.0.4:
+    resolution: {integrity: sha512-f5DRIOZf7wxogefH03RjMPMdBF7ADTWUMoOs9kaJo06EfwF+aFhMZMDZxHg/Xe12hptN9xoZjGso2fdjapBRIA==}
+    engines: {node: '>=10'}
+    dependencies:
+      call-me-maybe: 1.0.2
+      cross-spawn: 7.0.3
+      string-argv: 0.3.1
+      type-detect: 4.0.8
+    dev: true
 
   /@juggle/resize-observer/3.4.0:
     resolution: {integrity: sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==}
@@ -2201,6 +2213,21 @@ packages:
       semver: 7.5.0
     dev: true
 
+  /bumpp/9.1.0:
+    resolution: {integrity: sha512-m3+YD8uoa0VttG+RV4oKr3lK60gkUn1yPDaBTFwT7xrdJUsy7Jm0VYgx457HI3VPAOX8szLmy1x2y1QcvB+M8Q==}
+    engines: {node: '>=10'}
+    hasBin: true
+    dependencies:
+      '@jsdevtools/ez-spawn': 3.0.4
+      c12: 1.4.1
+      cac: 6.7.14
+      fast-glob: 3.2.12
+      prompts: 2.4.2
+      semver: 7.5.0
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
+
   /c12/1.4.1:
     resolution: {integrity: sha512-0x7pWfLZpZsgtyotXtuepJc0rZYE0Aw8PwNAXs0jSG9zq6Sl5xmbWnFqfmRY01ieZLHNbvneSFm9/x88CvzAuw==}
     dependencies:
@@ -2236,6 +2263,10 @@ packages:
     dependencies:
       function-bind: 1.1.1
       get-intrinsic: 1.2.0
+    dev: true
+
+  /call-me-maybe/1.0.2:
+    resolution: {integrity: sha512-HpX65o1Hnr9HH25ojC1YGs7HCQLq0GCOibSaWER0eNpgJ/Z1MZv2mTc7+xh6WOPxbRVcmgbv4hGU+uSQ/2xFZQ==}
     dev: true
 
   /callsites/3.1.0:
@@ -6692,6 +6723,11 @@ packages:
       bl: 5.1.0
     dev: true
 
+  /string-argv/0.3.1:
+    resolution: {integrity: sha512-a1uQGz7IyVy9YwhqjZIZu1c8JO8dNIe20xBmSS6qu9kv++k3JGzCVmprbNN5Kn+BgzD5E7YYwg1CcjuJMRNsvg==}
+    engines: {node: '>=0.6.19'}
+    dev: true
+
   /string-width/4.2.3:
     resolution: {integrity: sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==}
     engines: {node: '>=8'}
@@ -7076,6 +7112,11 @@ packages:
     engines: {node: '>= 0.8.0'}
     dependencies:
       prelude-ls: 1.2.1
+    dev: true
+
+  /type-detect/4.0.8:
+    resolution: {integrity: sha512-0fr/mIH1dlO+x7TlcMy+bIDqKPsw/70tVyeHW787goQjhmqaZe10uwLujubK9q9Lg6Fiho1KUKDYz0Z7k7g5/g==}
+    engines: {node: '>=4'}
     dev: true
 
   /type-fest/0.20.2:

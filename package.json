@@ -1,5 +1,6 @@
 {
   "private": true,
+  "version": "0.1.0-beta.0",
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
@@ -10,7 +11,8 @@
     "typecheck": "nuxt typecheck",
     "start": "NODE_ENV=production node .output/server/index.mjs",
     "docker:start": "nlx prisma generate && nlx prisma db push && nr preview",
-    "studio": "nlx prisma studio"
+    "studio": "nlx prisma studio",
+    "release": "bumpp"
   },
   "devDependencies": {
     "@antfu/ni": "^0.21.3",
@@ -29,6 +31,7 @@
     "@vue/eslint-config-prettier": "^7.1.0",
     "@vueuse/core": "^10.1.0",
     "@vueuse/nuxt": "^10.1.0",
+    "bumpp": "^9.1.0",
     "daisyui": "^2.51.6",
     "eslint": "^8.39.0",
     "eslint-config-alsacreations": "^0.4.0",
