@@ -187,6 +187,7 @@ const files = computed(() => {
 })
 
 const renamingModalState = useRenamingModal()
+const deletionModalState = useDeletionModal()
 </script>
 
 <template>
@@ -385,16 +386,7 @@ const renamingModalState = useRenamingModal()
                 })
 
                 isOptionsMenuOpen = false
-
-                fullFileBrowserStore
-                  .startPendingAction({
-                    dest: currentPath,
-                    fullFileBrowserId: uid,
-                  })
-                  .finally(() => {
-                    uncheckAll()
-                    refresh()
-                  })
+                deletionModalState.isDeletionModalOpened = true
               }
             "
           >
@@ -455,6 +447,29 @@ const renamingModalState = useRenamingModal()
           v-on:renamed="() => refresh()"
           v-on:close="() => (renamingModalState.isRenamingModalOpened = false)"
         ></RenamingModal>
+      </Teleport>
+    </ClientOnly>
+
+    <ClientOnly>
+      <Teleport to="#dialog-root">
+        <DeletionModal
+          v-if="deletionModalState.isDeletionModalOpened"
+          v-on:delete="
+            () => {
+              fullFileBrowserStore
+                .startPendingAction({
+                  dest: currentPath,
+                  fullFileBrowserId: uid,
+                })
+                .finally(() => {
+                  uncheckAll()
+                  deletionModalState.closeDeletionModal()
+                  refresh()
+                })
+            }
+          "
+          v-on:close="() => deletionModalState.closeDeletionModal()"
+        />
       </Teleport>
     </ClientOnly>
 
