@@ -14,6 +14,11 @@ definePageMeta({
     class="main row-span-full col-span-full flex items-center justify-center"
     tabindex="-1"
   >
-    <AuthForm :authType="'signIn'"></AuthForm>
+    <AppLogo class="text-[#001923]"></AppLogo>
+
+    <AuthForm
+      class="mt-10"
+      :authType="'signIn'"
+    ></AuthForm>
   </main>
 </template>

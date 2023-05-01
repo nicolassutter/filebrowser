@@ -15,9 +15,15 @@ const credentials = reactive({
 </script>
 
 <template>
-  <p v-if="authError === 'CredentialsSignin'">Bad credentials provided</p>
+  <p
+    v-if="authError === 'CredentialsSignin'"
+    v-bind="$attrs"
+  >
+    Bad credentials provided
+  </p>
 
   <form
+    v-bind="$attrs"
     class="bg-base-200 rounded-lg p-5 w-full max-w-sm"
     v-on:submit.prevent="
       () =>

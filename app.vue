@@ -2,9 +2,11 @@
 import './assets/app.css'
 
 useHead({
+  title: 'FileBrowser',
   bodyAttrs: {
     class: 'dark',
   },
+  link: [{ rel: 'icon', type: 'image/png', href: '/favicon.png' }],
 })
 </script>
 

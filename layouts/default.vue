@@ -5,7 +5,9 @@ const { status, signOut } = useAuth()
 </script>
 
 <template>
-  <header class="header bg-base-200"></header>
+  <header class="header bg-base-200 flex items-center p-5">
+    <AppLogo class="text-[#001923]"></AppLogo>
+  </header>
 
   <aside class="aside">
     <ul class="menu bg-base-100 w-56 p-2 rounded-box">

@@ -248,7 +248,7 @@ const renamingModalState = useRenamingModal()
 
       <div class="p-2 flex gap-2">
         <button
-          class="btn btn-sm"
+          class="btn btn-sm btn-accent"
           v-on:click="
             () => {
               isDirectoryModalOpened = true
