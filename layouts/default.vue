@@ -6,7 +6,7 @@ const { status, signOut } = useAuth()
 
 <template>
   <header class="header bg-base-200 flex items-center p-5">
-    <AppLogo class="text-[#001923]"></AppLogo>
+    <AppLogo class="text-[#001923] shrink-0"></AppLogo>
   </header>
 
   <aside class="aside">

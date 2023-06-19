@@ -151,7 +151,7 @@ const pathParts = computed(() => {
 const newDirName = ref('')
 
 const isNewDirNameValid = computed(() => {
-  const validDirRegex = /^[a-zA-Z0-9_-\s]+$/
+  const validDirRegex = /^[a-zA-Z0-9_-\s()[\]]+$/
   return newDirName.value !== '' && validDirRegex.test(newDirName.value)
 })
 
@@ -478,7 +478,7 @@ const deletionModalState = useDeletionModal()
         <div
           v-if="isDirectoryModalOpened"
           ref="directoryModal"
-          class="modal modal-bottom sm:modal-middle"
+          class="modal modal-middle"
           :class="{
             'visible opacity-100 pointer-events-auto': isDirectoryModalOpened,
           }"

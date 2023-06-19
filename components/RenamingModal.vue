@@ -18,7 +18,7 @@ const emit = defineEmits([
 const uid = uuid()
 
 const isNewNameValid = computed(() => {
-  const validNameRegex = /^[a-zA-Z0-9_-\s.]+$/
+  const validNameRegex = /^[a-zA-Z0-9_-\s.()[\]]+$/
   return (
     props.renamingItemNewName !== '' &&
     props.renamingItemNewName !== itemOldName.value &&
@@ -45,7 +45,7 @@ function closeRenamingModal() {
 <template>
   <div
     ref="renamingModal"
-    class="modal modal-bottom sm:modal-middle visible opacity-100 pointer-events-auto"
+    class="modal modal-middle visible opacity-100 pointer-events-auto"
     aria-modal="true"
     role="dialog"
     tabindex="-1"

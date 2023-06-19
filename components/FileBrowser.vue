@@ -188,13 +188,14 @@ function toggleMenu(path: string, value?: boolean) {
             v-if="dirOrFile.type === 'directory'"
             role="img"
             aria-label="Directory"
-            class="text-info"
+            class="text-info shrink-0"
           />
 
           <IconFile
             v-if="dirOrFile.type === 'file'"
             role="img"
             aria-label="File"
+            class="shrink-0"
           />
 
           {{ dirOrFile.label }}

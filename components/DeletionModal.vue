@@ -11,7 +11,7 @@ function closeDeletionModal() {
 
 <template>
   <div
-    class="modal modal-bottom sm:modal-middle visible opacity-100 pointer-events-auto"
+    class="modal modal-middle visible opacity-100 pointer-events-auto"
     aria-modal="true"
     role="dialog"
     tabindex="-1"
